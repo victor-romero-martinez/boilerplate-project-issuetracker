@@ -2,18 +2,26 @@ const URI = 'https://issue-tracker.freecodecamp.rocks/api/issues'
 
 
 /** Issue fetcher fn */
-function Issue() {
+function IssueHander() {
     /**
      * Get issues
      * @param {string} project project name
+     * @param {any} query query params
      */
-    this.get = async function (project) {
+    this.get = async function (project, query) {
+        let new_query = ''
+
+        for (const [k, v] of Object.entries(query)) {
+            new_query += `${k}=${v}&` 
+        }
+
         try {
-            const response = await fetch(`${URI}/${project}`)
-            const data = await response.json()
-            return data
+            const response = await fetch(`${URI}/${project}${query ? `?${new_query}`: ''}`)
+            const result = await response.json()
+
+            return { status: response.status, result }
         } catch (error) {
-            return error
+            console.log(error)
         }
     }
 
@@ -31,9 +39,9 @@ function Issue() {
             })
             const result = await response.json()
 
-            return result
+            return { status: response.status, result }
         } catch (error) {
-            return error
+            console.log(error)
         }
     }
 
@@ -51,9 +59,9 @@ function Issue() {
             })
             const result = await response.json()
 
-            return result
+            return { status: response.status, result }
         } catch (error) {
-            return error
+            console.log(error)
         }
     }
 
@@ -69,13 +77,13 @@ function Issue() {
                 method: 'DELETE',
                 body: JSON.stringify({ '_id': id })
             })
-            const reslult = await response.json()
+            const result = await response.json()
 
-            return reslult
+            return { status: response.status, result }
         } catch (error) {
-            return error
+            console.log(error)
         }
     }
 }
 
-module.exports = Issue
+module.exports = IssueHander

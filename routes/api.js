@@ -1,8 +1,8 @@
 'use strict';
 
-const Issue = require('../utils/issue-fetch')
+const IssueHandler = require('../controller/issue-handler')
 
-const issueFetch = new Issue
+const issueFetch = new IssueHandler()
 
 module.exports = function (app) {
 
@@ -10,8 +10,9 @@ module.exports = function (app) {
 
     .get(async function (req, res) {
       let project = req.params.project;
-      let result = await issueFetch.get(project)
-      res.json(result)
+      let query = req.query
+      let { status, result } = await issueFetch.get(project, query)
+      res.status(status).json(result)
     })
 
     .post(async function (req, res) {
@@ -19,8 +20,8 @@ module.exports = function (app) {
       let { body } = req
 
       if (project && body) {
-        let result = await issueFetch.post(project, body)
-        res.json(result)
+        let { status, result } = await issueFetch.post(project, body)
+        res.status(status).json(result)
       } else {
         res.status(404).send('Not found')
       }
@@ -30,9 +31,9 @@ module.exports = function (app) {
       let project = req.params.project;
       let { body } = req
 
-      if (project && body._id) {
-        let result = await issueFetch.put(project, body)
-        res.json(result)
+      if (project) {
+        let { status, result } = await issueFetch.put(project, body)
+        res.status(status).json(result)
       } else {
         res.status(404).send('Not found')
       }
@@ -42,9 +43,9 @@ module.exports = function (app) {
       let project = req.params.project;
       let { _id } = req.body
 
-      if (project && _id) {
-        let result = await issueFetch.delete(project, _id)
-        res.json(result)
+      if (project) {
+        let { status, result } = await issueFetch.delete(project, _id)
+        res.status(status).json(result)
       } else {
         res.status(404).send('Not found')
       }
